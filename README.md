@@ -29,7 +29,7 @@
    ```
 
    ```
-   pip install -r requirements.txt
+   pip install -r requirements.txt -i -i https://mirrors.aliyun.com/pypi/simple/
    ```
 
 3. **GeoIP 配置**（可选）：
