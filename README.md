@@ -62,6 +62,7 @@ Bash
 ```
 python app.py
 ```
+<img width="1426" height="764" alt="image" src="https://github.com/user-attachments/assets/a5afb2ee-7090-4006-a2c2-31b9d6eb1d46" />
 
 - **Web 管理端**：`http://127.0.0.1:5000`
 - **代理分发 Hub**：`127.0.0.1:8888`
@@ -69,10 +70,23 @@ python app.py
 ### 2. 采集与保存
 
 - 在管理页面点击 **“加载代理源”**，从 `api_sources.json` 预设中提取 URL。
+
+<img width="822" height="485" alt="image" src="https://github.com/user-attachments/assets/7e3b032c-7893-431c-a274-78ae89c28c27" />
+
 - 勾选目标源并点击 **“采集勾选源”**。
+<img width="813" height="744" alt="image" src="https://github.com/user-attachments/assets/a932f246-da50-41f5-a166-454ac72112c6" />
+
+- 检测采集代理活性(一定要做)
+<img width="1326" height="567" alt="image" src="https://github.com/user-attachments/assets/51fcf229-33ac-4ff6-8503-f9875bfa4bb1" />
+
+- 耐心等待,获取到有效代理
+
+<img width="1430" height="717" alt="image" src="https://github.com/user-attachments/assets/ba87097f-68ef-448b-876d-4bb67183fb61" />
+
+
 - 点击 **“保存当前状态”**，确保数据在下次启动时依然可用。
 
-### 3. 应用分发
+### 3. 应用代理转发
 
 - 将您的浏览器（SwitchyOmega）或爬虫脚本代理设为 `127.0.0.1:8888`。
 - 系统会根据您在界面选定的“轮询模式”（全部/国内/国外）自动筛选 IP 进行分发。
