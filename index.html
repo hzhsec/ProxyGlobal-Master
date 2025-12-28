@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalProxy Master | 专业代理分发系统</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 30px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 顶部标题栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .header h1 { font-size: 2rem; letter-spacing: -1px; color: var(--text-main); }
+        .header h1 span { color: var(--primary); }
+        .header .status-bar { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* 仪表盘 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        /* 通用区块样式 */
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: ''; display: inline-block; width: 3px; height: 18px; background: var(--primary); border-radius: 2px;
+        }
+
+        /* 输入与控件 */
+        .input-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        input, select, textarea {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        textarea { width: 100%; min-height: 100px; resize: vertical; }
+
+        /* 按钮体系 */
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button.btn-secondary { background: #334155; }
+        button.btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+        button.btn-danger:hover { background: var(--danger); color: white; }
+        button.btn-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* 列表展示 */
+        .api-list { max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
+        .list-item {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            border-bottom: 1px solid var(--border);
+        }
+        .list-item:last-child { border-bottom: none; }
+
+        /* 表格样式 */
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--text-dim); font-weight: 500; border-bottom: 2px solid var(--border); font-size: 0.85rem; }
+        td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        
+        /* 标签 Badge */
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .loading-text { color: var(--primary); animation: pulse 1.5s infinite; font-weight: 600; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>GlobalProxy <span>Master</span></h1>
+                <p style="color: var(--text-dim); font-size: 0.9rem;">专业级分布式代理链路管理系统</p>
+            </div>
+            <div class="status-bar">
+                本地转发出口: <span style="color: var(--primary); font-family: monospace;">127.0.0.1:8888</span>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <div class="stat-card"><div class="stat-label">库中总数</div><div class="stat-value" id="total-proxies">0</div></div>
+            <div class="stat-card"><div class="stat-label">存活可用</div><div class="stat-value" id="alive-proxies" style="color: var(--success);">0</div></div>
+            <div class="stat-card"><div class="stat-label">国内节点</div><div class="stat-value" id="domestic-proxies">0</div></div>
+            <div class="stat-card"><div class="stat-label">国外节点</div><div class="stat-value" id="foreign-proxies">0</div></div>
+            <div class="stat-card" style="background: rgba(239, 68, 68, 0.05);">
+                <div class="stat-label">异常拦截(黑名单)</div>
+                <div class="stat-value" id="bl-count" style="color: var(--danger);">0</div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <div>
+                <div class="section">
+                    <h3 class="section-title">📡 接口源管理</h3>
+                    <div class="input-group">
+                        <input type="text" id="api-url" placeholder="API 请求地址" style="flex: 3;">
+                        <input type="text" id="api-tag" placeholder="识别标签" style="flex: 1;">
+                        <button onclick="addAPI()">添加源</button>
+                    </div>
+                    <div class="input-group">
+                        <button class="btn-secondary" onclick="loadDefaultAPIs('basic')">默认源加载(勾选)</button>
+                        <button onclick="fetchAllAPIs()">🔄 异步采集</button>
+						<label style="font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
+							<input type="checkbox" id="use-fetch-proxy" checked> 使用代理采集 (默认7897)
+						</label>
+                        <button class="btn-danger" onclick="clearAPIs()">清空</button>
+                    </div>
+                    <div class="api-list" id="api-list"></div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">🔄 轮询分发 Hub</h3>
+                    <div class="input-group">
+                        <select id="hub-mode" style="min-width: 140px;">
+							<option value="domestic">轮询模式: 仅国内</option>
+                            <option value="all">轮询模式: 全局</option>
+                            <option value="foreign">轮询模式: 仅国外</option>
+                        </select>
+                        <button onclick="updateHubMode()">更新策略</button>
+                        <button class="btn-warning" onclick="manualSwitch()">🔀 强制切跳</button>
+                        <button class="btn-danger" onclick="clearBlacklist()">♻️ 重置黑名单</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section">
+                    <h3 class="section-title">📥 万能文本导入</h3>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <select id="protocol-select" style="max-width: 120px;">
+                            <option value="http">HTTP</option>
+                            <option value="socks5">SOCKS5</option>
+                        </select>
+                        <span style="font-size: 0.8rem; color: var(--text-dim);">自动正则提取所有 IP:Port 格式</span>
+                    </div>
+                    <textarea id="proxy-input" placeholder="支持乱码文本、配置文件、日志，系统将自动清洗..."></textarea>
+                    <button onclick="importProxies()" style="width: 100%; justify-content: center; margin-top: 10px;">执行导入任务</button>
+                </div>
+
+				<div class="section">
+					<h3 class="section-title">🔍 全量健康检查</h3>
+					<div class="input-group">
+						<button onclick="startDetection()" style="flex: 2;">🚀 启动并发检测任务</button>
+						<button class="btn-secondary" onclick="clearDeadProxies()" style="flex: 1;">清理失效</button>
+						<button class="btn-secondary" onclick="savePersistence()" style="flex: 1; background: var(--success); color: white; border: none;">💾 保存当前状态</button>
+					</div>
+					<div id="detection-status" class="loading-text" style="display:none; margin-top: 10px; font-size: 0.9rem;"></div>
+				</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3 class="section-title">📋 实时代理监控 (Last 100 Items)</h3>
+            <div class="table-container">
+                <table id="proxy-table">
+                    <thead>
+                        <tr>
+                            <th>节点地址</th>
+                            <th>状态</th>
+                            <th>响应延迟</th>
+                            <th>物理位置</th>
+                            <th>最后校验时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proxy-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+<script>
+    // 刷新仪表盘 
+    async function refreshDashboard() {
+        try {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+            document.getElementById('total-proxies').textContent = data.total;
+            document.getElementById('alive-proxies').textContent = data.alive;
+            document.getElementById('domestic-proxies').textContent = data.domestic;
+            document.getElementById('foreign-proxies').textContent = data.foreign;
+            if(document.getElementById('bl-count')) document.getElementById('bl-count').textContent = data.blacklist;
+        } catch (e) { console.error('Dashboard Sync Error:', e); }
+    }
+
+    // 核心功能接口 
+    async function addAPI() {
+        const url = document.getElementById('api-url').value;
+        const tag = document.getElementById('api-tag').value;
+        if (!url) return alert('URL 不能为空');
+        await fetch('/api/add_api', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url, tag})
+        });
+        loadAPIs();
+        document.getElementById('api-url').value = '';
+    }
+
+    async function loadAPIs() {
+        const res = await fetch('/api/list_apis');
+        const apis = await res.json();
+        const list = document.getElementById('api-list');
+        list.innerHTML = apis.map(api => `
+            <div class="list-item">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" class="api-selector" value="${api.id}">
+                    <span style="font-family: monospace; font-size: 0.85rem;">${api.url}</span>
+                    <span class="badge badge-info">${api.tag || 'SRC'}</span>
+                </div>
+                <button class="btn-danger" style="padding: 5px 10px;" onclick="removeAPI(${api.id})">移除</button>
+            </div>
+        `).join('');
+    }
+
+    // 从本地 JSON 加载源
+    async function loadDefaultAPIs(type) {
+        const res = await fetch('/api/load_local_sources', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({type})
+        });
+        const data = await res.json();
+        if(data.success) {
+            loadAPIs();
+            alert(`成功提取 ${data.count} 个源`);
+        } else { alert(data.message); }
+    }
+
+    // 仅采集选中的源 
+	async function fetchAllAPIs() {
+		const checked = Array.from(document.querySelectorAll('.api-selector:checked')).map(el => parseInt(el.value));
+		if(checked.length === 0) return alert('请先勾选要采集的源');
+
+		// 获取勾选框状态
+		const useProxy = document.getElementById('use-fetch-proxy').checked;
+
+		const status = document.getElementById('detection-status');
+		status.style.display = 'block';
+		status.textContent = `>> 正在采集... (代理: ${useProxy ? '开启' : '关闭'})`;
+		
+		await fetch('/api/fetch_selected_apis', {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+			body: JSON.stringify({
+				ids: checked,
+				use_proxy: useProxy // 传给后端
+			})
+		});
+		
+		status.textContent = '>> 采集完成';
+		setTimeout(() => { status.style.display = 'none'; }, 2000);
+		refreshDashboard(); loadProxies();
+	}
+
+    async function startDetection() {
+        const status = document.getElementById('detection-status');
+        status.style.display = 'block';
+        status.textContent = '>> 正在执行并发检测...';
+        await fetch('/api/detect_all', {method: 'POST'});
+        status.textContent = '>> 检测已完成';
+        setTimeout(() => { status.style.display = 'none'; }, 2000);
+        refreshDashboard(); loadProxies();
+    }
+
+    async function loadProxies() {
+        const res = await fetch('/api/list_proxies');
+        const proxies = await res.json();
+        const tbody = document.getElementById('proxy-tbody');
+        tbody.innerHTML = proxies.map(p => `
+            <tr>
+                <td style="font-family: monospace;">${p.proxy}</td>
+                <td><span class="badge ${p.alive ? 'badge-success' : 'badge-danger'}">${p.alive ? 'ACTIVE' : 'DEAD'}</span></td>
+                <td style="color: ${p.latency < 500 ? 'var(--success)' : 'var(--warning)'}">${p.latency} ms</td>
+                <td><span class="badge ${p.region === '国内' ? 'badge-info' : 'badge-warning'}">${p.region}</span></td>
+                <td style="color: var(--text-dim); font-size: 0.8rem;">${p.last_check || '-'}</td>
+            </tr>
+        `).join('');
+    }
+
+    // 其他控制功能 
+    async function importProxies() {
+        const text = document.getElementById('proxy-input').value;
+        const protocol = document.getElementById('protocol-select').value;
+        if (!text) return alert('输入区域为空');
+        await fetch('/api/import_proxies', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text, protocol})
+        });
+        document.getElementById('proxy-input').value = '';
+        refreshDashboard(); loadProxies();
+    }
+
+    async function removeAPI(id) { await fetch('/api/remove_api/' + id, {method: 'DELETE'}); loadAPIs(); }
+    async function clearAPIs() { if (!confirm('清空所有源?')) return; await fetch('/api/clear_apis', {method: 'POST'}); loadAPIs(); }
+    async function savePersistence() { const res = await fetch('/api/save_persistence', {method: 'POST'}); const d = await res.json(); alert(d.message); }
+    async function manualSwitch() { await fetch('/api/manual_switch', {method: 'POST'}); alert('已切跳'); }
+    async function clearBlacklist() { await fetch('/api/clear_blacklist', {method: 'POST'}); refreshDashboard(); }
+    async function clearDeadProxies() { await fetch('/api/clear_dead', {method: 'POST'}); refreshDashboard(); loadProxies(); }
+    async function updateHubMode() {
+        const mode = document.getElementById('hub-mode').value;
+        await fetch('/api/update_hub_mode', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({mode})
+        });
+		alert('已切换模式')
+    }
+
+    setInterval(refreshDashboard, 5000);
+    window.onload = () => { loadAPIs(); refreshDashboard(); loadProxies(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+CONFIG = {
+    "proxy_hub_port": 8888,
+    "web_port": 5000,
+    # 你的本地 Clash/V2Ray 代理地址，用于加速采集 GitHub
+    "fetch_proxy": "http://127.0.0.1:7897", 
+    "use_fetch_proxy": True, # 是否开启采集代理
+    "data_file": "proxies_data.json",
+    "source_config": "api_sources.json",
+    "timeout": 10,
+    "max_concurrent": 100,
+    "max_retries": 5
+}

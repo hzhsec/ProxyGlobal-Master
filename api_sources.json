@@ -1,0 +1,61 @@
+{
+  "basic": {
+    "description": "基础代理源 (来自 api.txt) - 数量较少但质量较高",
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt",
+        "tag": "基础-SOCKS5",
+        "type": "socks5",
+        "quality": "high"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/zloi-user/hideip.me/master/socks5.txt",
+        "tag": "基础-SOCKS5",
+        "type": "socks5",
+        "quality": "high"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/zloi-user/hideip.me/master/http.txt",
+        "tag": "基础-HTTP",
+        "type": "http",
+        "quality": "medium"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/http.txt",
+        "tag": "大量完整-HTTP",
+        "type": "http",
+        "quality": "medium"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/socks5.txt",
+        "tag": "大量完整-SOCKS5",
+        "type": "socks5",
+        "quality": "medium"
+      }
+    ]
+  },
+  
+  "full": {
+    "description": "完整代理源 (来自 api_lost.txt) - 数量更多但需要筛选",
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/socks5.txt",
+        "tag": "完整-SOCKS5",
+        "type": "socks5",
+        "quality": "medium"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/fyvri/fresh-proxy-list/archive/storage/classic/http.txt",
+        "tag": "完整-HTTP",
+        "type": "http",
+        "quality": "medium"
+      }
+    ]
+  },
+  
+  "recommended_workflow": {
+    "quick_start": "使用基础源快速获得少量高质量代理",
+    "full_scan": "使用完整源进行大规模采集和筛选",
+    "daily_use": "建议先用基础源测试，需要更多代理时再用完整源"
+  }
+}
