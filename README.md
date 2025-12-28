@@ -57,8 +57,6 @@
 
 ### 1. 启动服务
 
-Bash
-
 ```
 python app.py
 ```
